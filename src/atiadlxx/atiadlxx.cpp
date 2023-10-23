@@ -4,7 +4,7 @@
 static auto initalizationMutex = std::mutex{};
 
 extern "C" {
-    using namespace dxvk;
+    //using namespace dxvk;
 
 
 }

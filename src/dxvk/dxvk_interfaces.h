@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../nvapi_private.h"
+#include "../adlx_private.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
@@ -42,11 +42,11 @@ IDXGIVkInteropFactory : public IUnknown {
 };
 
 /**
-￼ * \brief DXGI adapter interface for Vulkan interop
-￼ *
-￼ * Provides access to the physical device and
-￼ * instance handles for the given DXGI adapter.
-￼ */
+ * \brief DXGI adapter interface for Vulkan interop
+ *
+ * Provides access to the physical device and
+ * instance handles for the given DXGI adapter.
+ */
 MIDL_INTERFACE("3a6d8f2c-b0e8-4ab4-b4dc-4fd24891bfa5")
 IDXGIVkInteropAdapter : public IUnknown {
     static const GUID guid;
