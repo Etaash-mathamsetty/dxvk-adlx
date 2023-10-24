@@ -41,7 +41,7 @@ extern "C"
                                                                                 adl_context->vk_instance, "vkGetPhysicalDeviceProperties");
         if(!func || !func2)
         {
-            printf("ERROR: ADL2_Adapter_AdapterInfo_Get failed to get \n");
+            printf("ERROR: ADL2_Adapter_AdapterInfo_Get failed to get vulkan funcs\n");
             return ADL_ERR;
         }
 
