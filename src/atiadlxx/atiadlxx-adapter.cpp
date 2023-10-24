@@ -90,6 +90,8 @@ extern "C"
         int num_adapters = 0;
         ADL2_Adapter_NumberOfAdapters_Get(context, &num_adapters);
         *info = (AdapterInfo*)adl_context->adl_malloc(sizeof(AdapterInfo) * num_adapters);
+        if(!*info)
+            return ADL_ERR;
         memset(*info, 0, sizeof(AdapterInfo) * num_adapters);
 
         return ADL2_Adapter_AdapterInfo_Get(context, *info, sizeof(AdapterInfo) * num_adapters);
