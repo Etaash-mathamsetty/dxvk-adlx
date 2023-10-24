@@ -41,3 +41,10 @@ static auto adlMutex = std::mutex{};
 
 //no-op for now, since no known applications to test with
 #define ADL_LOCK() do { } while(0)
+
+static int convert_to_base_10(int id)
+{
+    char str[16];
+    snprintf(str, 16, "%x", id);
+    return atoi(str);
+}

@@ -1,7 +1,5 @@
 #include "adlx_common.h"
 
-//global adl1 context, struct def for adl context
-
 
 extern "C"
 {
@@ -15,16 +13,7 @@ extern "C"
 
     int __stdcall ADL2_Main_Control_Refresh(ADL_CONTEXT_HANDLE context)
     {
-        ADL_CONTEXT *adl_context = (ADL_CONTEXT*) context;
-        ADL_LOCK();
-        if(adl_context->enum_connected_adapters == 0)
-        {
-            printf("FIXME: ADL2_Main_Control_Refresh enum_connected_adapters == 0\n");
-        }
-
         //no-op
-
-
         return ADL_OK;
     }
 

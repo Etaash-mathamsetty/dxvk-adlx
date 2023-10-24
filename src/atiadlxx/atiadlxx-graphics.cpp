@@ -48,8 +48,6 @@ extern "C"
 
         printf("FIXME: Ignoring adapter_index %d\n", adapter_index);
 
-        memcpy(info, &global_versions_infox2, sizeof(ADLVersionsInfoX2));
-
-        return ADL_OK;
+        return ADL2_Graphics_VersionsX2_Get(context, info);
     }
 }
