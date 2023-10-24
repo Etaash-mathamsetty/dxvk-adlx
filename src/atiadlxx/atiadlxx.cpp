@@ -5,6 +5,15 @@
 
 static auto adlMutex = std::mutex{};
 
+/*
+#define ADL_LOCK() std::unique_lock<std::mutex> _lock____ \
+  = (adl_context->threading_model == ADL_THREADING_LOCKED) ? \
+  std::unique_lock<std::mutex>(adlMutex) : std::unique_lock<std::mutex>() \
+*/
+
+//no-op for now, since no known applications to test with
+#define ADL_LOCK() do { } while(0)
+
 //global adl1 context, struct def for adl context
 struct ADL_CONTEXT
 {
@@ -29,6 +38,7 @@ extern "C"
     int __stdcall ADL2_Main_Control_Refresh(ADL_CONTEXT_HANDLE context)
     {
         ADL_CONTEXT *adl_context = (ADL_CONTEXT*) context;
+        ADL_LOCK();
         if(adl_context->enum_connected_adapters == 0)
         {
             printf("FIXME: ADL2_Main_Control_Refresh enum_connected_adapters == 0\n");
@@ -43,6 +53,7 @@ extern "C"
     int __stdcall ADL2_Adapter_NumberOfAdapters_Get(ADL_CONTEXT_HANDLE context, int* num_adapters)
     {
         ADL_CONTEXT *adl_context = (ADL_CONTEXT*) context;
+        ADL_LOCK();
 
         if(!num_adapters)
             return ADL_ERR_INVALID_PARAM;
@@ -55,7 +66,10 @@ extern "C"
             return ADL_ERR;
         }
 
-        func(adl_context->vk_instance, num_adapters, nullptr);
+        uint32_t num_adapters_vk = 0;
+        func(adl_context->vk_instance, &num_adapters_vk, nullptr);
+
+        *num_adapters = num_adapters_vk;
 
         return ADL_OK;
     }
@@ -115,6 +129,7 @@ extern "C"
     int __stdcall ADL2_Main_Control_Destroy(ADL_CONTEXT_HANDLE context)
     {
         ADL_CONTEXT *adl_context = (ADL_CONTEXT*) context;
+        ADL_LOCK();
         //not freeing dxgi factory since it is basically a global singleton
         free(adl_context);
         return ADL_OK;
