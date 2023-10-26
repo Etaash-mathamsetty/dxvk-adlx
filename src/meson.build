@@ -3,6 +3,7 @@ adlx_src = files([
     'atiadlxx/atiadlxx.cpp',
     'atiadlxx/atiadlxx-adapter.cpp',
     'atiadlxx/atiadlxx-graphics.cpp',
+    'atiadlxx/atiadlxx-display.cpp',
 ])
 
 adlx_dll = shared_library('atiadlx' + target_suffix, [ adlx_src, dxvk_adlx_version ],

@@ -11,7 +11,19 @@ extern "C"
         return (void*)GetProcAddress((HMODULE)module, proc_name);;
     }
 
+    void* __stdcall ADL_Main_Control_GetProcAddress(void *module, char* proc_name)
+    {
+        //printf("TRACE: ADL2_Main_Control_GetProcAddress: %p %s\n", module, proc_name);
+        return (void*)GetProcAddress((HMODULE)module, proc_name);;
+    }
+
     int __stdcall ADL2_Main_Control_Refresh(ADL_CONTEXT_HANDLE context)
+    {
+        //no-op
+        return ADL_OK;
+    }
+
+    int __stdcall ADL_Main_Control_Refresh()
     {
         //no-op
         return ADL_OK;
@@ -78,4 +90,45 @@ extern "C"
         return ADL_OK;
     }
 
+    int __stdcall ADL_Main_ControlX2_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters, ADLThreadingModel threadingModel)
+    {
+        ADL_CONTEXT *adl_context = &global_adl_context;
+
+        if(!callback)
+            return ADL_ERR_INVALID_PARAM;
+
+        adl_context->threading_model = threadingModel;
+        adl_context->adl_malloc = callback;
+        adl_context->enum_connected_adapters = iEnumConnectedAdapters;
+        adl_context->is_adl1 = true;
+        if(FAILED(CreateDXGIFactory(IID_PPV_ARGS(&adl_context->dxgi_factory))))
+        {
+            printf("ERROR: ADL2_Main_Control_Create CreateDXGIFactory failed\n");
+            return ADL_ERR;
+        }
+
+        Com<IDXGIVkInteropFactory> interopFactory;
+        if(FAILED(adl_context->dxgi_factory->QueryInterface(IID_PPV_ARGS(&interopFactory))))
+        {
+            printf("ERROR: Failed to query: IDXGIVkInteropFactory. Make sure you are using dxvk's dxgi.dll!\n");
+            return ADL_ERR;
+        }
+
+        interopFactory->GetVulkanInstance(&adl_context->vk_instance, &adl_context->vk_get_instance_proc_addr);
+
+        ADL_Main_Control_Refresh();
+
+        return ADL_OK;
+    }
+
+    int __stdcall ADL_Main_Control_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters)
+    {
+        return ADL_Main_ControlX2_Create(callback, iEnumConnectedAdapters, ADL_THREADING_UNLOCKED);
+    }
+
+    int __stdcall ADL_Main_Control_Destroy()
+    {
+        //TODO: will need to free stuff later probably
+        return ADL_OK;
+    }
 }

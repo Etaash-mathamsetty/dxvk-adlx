@@ -15,6 +15,11 @@ extern "C"
         return ADL_OK;
     }
 
+    int __stdcall ADL_Graphics_Platform_Get(int *platform)
+    {
+        return ADL2_Graphics_Platform_Get((ADL_CONTEXT_HANDLE)&global_adl_context, platform);
+    }
+
     int __stdcall ADL2_Graphics_IsGfx9AndAbove(ADL_CONTEXT_HANDLE context)
     {
         printf("FIXME: ADL2_Graphics_IsGfx9AndAbove stub!\n");

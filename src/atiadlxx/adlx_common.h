@@ -11,6 +11,8 @@ struct ADL_CONTEXT
     dxvk::Com<IDXGIFactory> dxgi_factory;
     VkInstance vk_instance;
     PFN_vkGetInstanceProcAddr vk_get_instance_proc_addr;
+    //ADL2 might not behave identically to ADL1
+    bool is_adl1;
 };
 
 inline ADL_CONTEXT global_adl_context;

@@ -27,6 +27,11 @@ extern "C"
         return ADL_OK;
     }
 
+    int __stdcall ADL_Adapter_NumberOfAdapters_Get(int* num_adapters)
+    {
+        return ADL2_Adapter_NumberOfAdapters_Get((ADL_CONTEXT_HANDLE)&global_adl_context, num_adapters);
+    }
+
     int __stdcall ADL2_Adapter_AdapterInfo_Get(ADL_CONTEXT_HANDLE context, AdapterInfo *info_arr, int size)
     {
         ADL_CONTEXT *adl_context = (ADL_CONTEXT*) context;
