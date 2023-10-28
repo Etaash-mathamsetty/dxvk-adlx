@@ -84,6 +84,11 @@ extern "C"
         return ADL_OK;
     }
 
+    int __stdcall ADL_Adapter_AdapterInfo_Get(AdapterInfo *info_arr, int size)
+    {
+        return ADL2_Adapter_AdapterInfo_Get((ADL_CONTEXT_HANDLE)&global_adl_context, info_arr, size);
+    }
+
     int __stdcall ADL2_Adapter_AdapterInfoX2_Get(ADL_CONTEXT_HANDLE context, AdapterInfo **info)
     {
         ADL_CONTEXT* adl_context = (ADL_CONTEXT*)context;
