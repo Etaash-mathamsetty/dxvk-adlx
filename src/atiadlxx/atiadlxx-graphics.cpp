@@ -3,30 +3,32 @@
 
 extern "C"
 {
-    int __stdcall ADL2_Graphics_Platform_Get(ADL_CONTEXT_HANDLE context, int *platform)
+    int DLLEXPORT ADL2_Graphics_Platform_Get(ADL_CONTEXT_HANDLE context, int *platform)
     {
+        ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
         if(!platform)
             return ADL_ERR_INVALID_PARAM;
 
-        printf("FIXME: ADL2_Graphics_Platform_Get stub!\n");
+        print(adl_context, "FIXME: ADL2_Graphics_Platform_Get stub!\n");
 
         *platform = GRAPHICS_PLATFORM_DESKTOP;
 
         return ADL_OK;
     }
 
-    int __stdcall ADL_Graphics_Platform_Get(int *platform)
+    int DLLEXPORT ADL_Graphics_Platform_Get(int *platform)
     {
         return ADL2_Graphics_Platform_Get((ADL_CONTEXT_HANDLE)&global_adl_context, platform);
     }
 
-    int __stdcall ADL2_Graphics_IsGfx9AndAbove(ADL_CONTEXT_HANDLE context)
+    int DLLEXPORT ADL2_Graphics_IsGfx9AndAbove(ADL_CONTEXT_HANDLE context)
     {
-        printf("FIXME: ADL2_Graphics_IsGfx9AndAbove stub!\n");
+        ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
+        print(adl_context, "FIXME: ADL2_Graphics_IsGfx9AndAbove stub!\n");
         return TRUE;
     }
 
-    int __stdcall ADL2_Graphics_Versions_Get(ADL_CONTEXT_HANDLE context, ADLVersionsInfo *info)
+    int DLLEXPORT ADL2_Graphics_Versions_Get(ADL_CONTEXT_HANDLE context, ADLVersionsInfo *info)
     {
         if(!info)
             return ADL_ERR_INVALID_PARAM;
@@ -36,7 +38,12 @@ extern "C"
         return ADL_OK;
     }
 
-    int __stdcall ADL2_Graphics_VersionsX2_Get(ADL_CONTEXT_HANDLE context, ADLVersionsInfoX2 *info)
+    int DLLEXPORT ADL_Graphics_Versions_Get(ADLVersionsInfo *info)
+    {
+        return ADL2_Graphics_Versions_Get((ADL_CONTEXT_HANDLE)&global_adl_context, info);
+    }
+
+    int DLLEXPORT ADL2_Graphics_VersionsX2_Get(ADL_CONTEXT_HANDLE context, ADLVersionsInfoX2 *info)
     {
         if(!info)
             return ADL_ERR_INVALID_PARAM;
@@ -46,12 +53,13 @@ extern "C"
         return ADL_OK;
     }
 
-    int __stdcall ADL2_Graphics_VersionsX3_Get(ADL_CONTEXT_HANDLE context, int adapter_index, ADLVersionsInfoX2 *info)
+    int DLLEXPORT ADL2_Graphics_VersionsX3_Get(ADL_CONTEXT_HANDLE context, int adapter_index, ADLVersionsInfoX2 *info)
     {
+        ADL_CONTEXT *adl_context = (ADL_CONTEXT*) context;
         if(!info)
             return ADL_ERR_INVALID_PARAM;
 
-        printf("FIXME: Ignoring adapter_index %d\n", adapter_index);
+        print(adl_context, std::string("FIXME: Ignoring adapter_index") + std::to_string(adapter_index) + "\n");
 
         return ADL2_Graphics_VersionsX2_Get(context, info);
     }

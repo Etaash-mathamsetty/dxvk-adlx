@@ -4,18 +4,30 @@ extern "C"
 {
     using namespace dxvk;
 
-    int __stdcall ADL2_Display_DisplayMapConfig_Get(ADL_CONTEXT_HANDLE context, int index, int *num_display_maps, ADLDisplayMap **display_maps,
+    int DLLEXPORT ADL2_Display_DisplayMapConfig_Get(ADL_CONTEXT_HANDLE context, int adapter_index, int *num_display_maps, ADLDisplayMap **display_maps,
                                                         int *num_display_target, ADLDisplayTarget **display_target, int options)
     {
         ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
         ADL_LOCK();
 
+        if(!num_display_maps || !display_maps || !num_display_target || !display_target)
+            return ADL_ERR_INVALID_PARAM;
 
+        if(adapter_index == -1)
+        {
+            printf("FIXME: ADL2_Display_DisplayMapConfig_Get adapter_index %d, using 0\n", adapter_index);
+            adapter_index = 0;
+        }
 
-        return ADL_OK;
+        if(options != 0)
+        {
+            printf("FIXME: ADL2_Display_DisplayMapConfig_Get Unimplemented options: %x\n", options);
+        }
+
+        return ADL_ERR;
     }
 
-    int __stdcall ADL2_Display_Modes_Get(ADL_CONTEXT_HANDLE context, int adapter_index, int display_index, int *num_modes, ADLMode **modes)
+    int DLLEXPORT ADL2_Display_Modes_Get(ADL_CONTEXT_HANDLE context, int adapter_index, int display_index, int *num_modes, ADLMode **modes)
     {
         ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
         ADL_LOCK();
@@ -42,7 +54,7 @@ extern "C"
 
         if(FAILED(res))
         {
-            printf("ERROR: ADL2_Display_Modes_Get EnumAdapters failed\n");
+            print(adl_context, "ERROR: ADL2_Display_Modes_Get EnumAdapters failed\n");
             return ADL_ERR;
         }
 
@@ -50,7 +62,7 @@ extern "C"
 
         if(FAILED(res))
         {
-            printf("ERROR: ADL2_Display_Modes_Get EnumOutputs failed\n");
+            print(adl_context, "ERROR: ADL2_Display_Modes_Get EnumOutputs failed\n");
             return ADL_ERR;
         }
 
@@ -60,7 +72,7 @@ extern "C"
 
         if(FAILED(res))
         {
-            printf("ERROR: ADL2_Display_Modes_Get GetDisplayModeList failed\n");
+            print(adl_context, "ERROR: ADL2_Display_Modes_Get GetDisplayModeList failed\n");
             return ADL_ERR;
         }
 
@@ -70,7 +82,7 @@ extern "C"
 
         if(FAILED(res))
         {
-            printf("ERROR: ADL2_Display_Modes_Get GetDisplayModeList failed\n");
+            print(adl_context, "ERROR: ADL2_Display_Modes_Get GetDisplayModeList failed\n");
             return ADL_ERR;
         }
 
@@ -80,7 +92,7 @@ extern "C"
 
         if(!*modes)
         {
-            printf("ERROR: ADL2_Display_Modes_Get adl_malloc failed\n");
+            print(adl_context, "ERROR: ADL2_Display_Modes_Get adl_malloc failed\n");
             return ADL_ERR;
         }
 
@@ -92,7 +104,7 @@ extern "C"
 
         if(!ret)
         {
-            printf("ERROR: ADL2_Display_Modes_Get EnumDisplayDevicesA failed\n");
+            print(adl_context, "ERROR: ADL2_Display_Modes_Get EnumDisplayDevicesA failed\n");
             return ADL_ERR;
         }
 
@@ -104,7 +116,7 @@ extern "C"
 
         if(!ret)
         {
-            printf("ERROR: ADL2_Display_Modes_Get EnumDisplaySettingsA failed\n");
+            print(adl_context, "ERROR: ADL2_Display_Modes_Get EnumDisplaySettingsA failed\n");
             return ADL_ERR;
         }
 
@@ -112,7 +124,7 @@ extern "C"
         {
             ADLMode& mode = (*modes)[i];
             mode.fRefreshRate = (float)modes_dxgi[i].RefreshRate.Numerator /
-                                                            (float)modes_dxgi[i].RefreshRate.Denominator;
+                                                        (float)modes_dxgi[i].RefreshRate.Denominator;
 
             mode.iColourDepth = dev_mode.dmBitsPerPel;
             mode.iAdapterIndex = adapter_index;
@@ -129,15 +141,38 @@ extern "C"
         return ADL_OK;
     }
 
-    int __stdcall ADL_Display_Modes_Get(int adapter_index, int display_index, int *num_modes, ADLMode **modes)
+    int DLLEXPORT ADL_Display_Modes_Get(int adapter_index, int display_index, int *num_modes, ADLMode **modes)
     {
         return ADL2_Display_Modes_Get((ADL_CONTEXT_HANDLE)&global_adl_context, adapter_index, display_index, num_modes, modes);
     }
 
-    int __stdcall ADL_Display_DisplayMapConfig_Get(int index, int *num_display_maps, ADLDisplayMap **display_maps,
+    int DLLEXPORT ADL_Display_DisplayMapConfig_Get(int index, int *num_display_maps, ADLDisplayMap **display_maps,
                                                         int *num_display_target, ADLDisplayTarget **display_target, int options)
     {
         return ADL2_Display_DisplayMapConfig_Get((ADL_CONTEXT_HANDLE)&global_adl_context, index, num_display_maps, display_maps,
                                                         num_display_target, display_target, options);
+    }
+
+    int DLLEXPORT ADL_Display_SLSMapIndex_Get(int adapter_index, int display_target, ADLDisplayTarget *display_target_map_index, int *sls_map_index)
+    {
+        return ADL_ERR;
+    }
+
+    int DLLEXPORT ADL_Display_SLSMapConfig_Get( 	int  	iAdapterIndex,
+		int  	iSLSMapIndex,
+		ADLSLSMap *  	lpSLSMap,
+		int *  	lpNumSLSTarget,
+		ADLSLSTarget **  	lppSLSTarget,
+		int *  	lpNumNativeMode,
+		ADLSLSMode **  	lppNativeMode,
+		int *  	lpNumBezelMode,
+		ADLBezelTransientMode **  	lppBezelMode,
+		int *  	lpNumTransientMode,
+		ADLBezelTransientMode **  	lppTransientMode,
+		int *  	lpNumSLSOffset,
+		ADLSLSOffset **  	lppSLSOffset,
+		int  	iOption )
+    {
+        return ADL_ERR;
     }
 }

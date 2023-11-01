@@ -3,6 +3,8 @@
 #include "../util/com_pointer.h"
 #include "../../version.h"
 
+using PFN_wineDbgOutput = int(__cdecl*)(const char*);
+
 struct ADL_CONTEXT
 {
     ADLThreadingModel threading_model;
@@ -13,7 +15,25 @@ struct ADL_CONTEXT
     PFN_vkGetInstanceProcAddr vk_get_instance_proc_addr;
     //ADL2 might not behave identically to ADL1
     bool is_adl1;
+    PFN_wineDbgOutput wine_dbg;
+    std::ofstream log_file;
 };
+
+static void print(ADL_CONTEXT* ctx, std::string message)
+{
+    if(!ctx)
+        return;
+
+    if(ctx->wine_dbg)
+        ctx->wine_dbg(message.c_str());
+    else
+        std::cerr << message;
+
+    if(ctx->log_file.is_open())
+        ctx->log_file << message;
+
+    ctx->log_file.flush();
+}
 
 inline ADL_CONTEXT global_adl_context;
 
@@ -50,3 +70,5 @@ static int convert_to_base_10(int id)
     snprintf(str, 16, "%x", id);
     return atoi(str);
 }
+
+#define DLLEXPORT __stdcall __declspec(dllexport)

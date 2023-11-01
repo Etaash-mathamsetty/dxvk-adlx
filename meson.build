@@ -22,7 +22,7 @@ link_args = [
     '-static',
     '-static-libgcc',
     '-static-libstdc++',
-    '-Wl,--file-alignment=4096'
+    '-Wl,--file-alignment=4096,--enable-stdcall-fixup'
 ]
 
 add_project_arguments(cpp.get_supported_arguments(compiler_args), language: 'cpp')

@@ -5,42 +5,51 @@ extern "C"
 {
     using namespace dxvk;
 
-    void* __stdcall ADL2_Main_Control_GetProcAddress(ADL_CONTEXT_HANDLE context, void *module, char* proc_name)
+    void* DLLEXPORT ADL2_Main_Control_GetProcAddress(ADL_CONTEXT_HANDLE context, void *module, char* proc_name)
     {
         //printf("TRACE: ADL2_Main_Control_GetProcAddress: %p %s\n", module, proc_name);
         return (void*)GetProcAddress((HMODULE)module, proc_name);;
     }
 
-    void* __stdcall ADL_Main_Control_GetProcAddress(void *module, char* proc_name)
+    void* DLLEXPORT ADL_Main_Control_GetProcAddress(void *module, char* proc_name)
     {
         //printf("TRACE: ADL2_Main_Control_GetProcAddress: %p %s\n", module, proc_name);
         return (void*)GetProcAddress((HMODULE)module, proc_name);;
     }
 
-    int __stdcall ADL2_Main_Control_Refresh(ADL_CONTEXT_HANDLE context)
+    int DLLEXPORT ADL2_Main_Control_Refresh(ADL_CONTEXT_HANDLE context)
     {
         //no-op
         return ADL_OK;
     }
 
-    int __stdcall ADL_Main_Control_Refresh()
+    int DLLEXPORT ADL_Main_Control_Refresh()
     {
         //no-op
         return ADL_OK;
     }
 
-    int __stdcall ADL2_Main_ControlX3_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters, ADL_CONTEXT_HANDLE* context,
+    int DLLEXPORT ADL2_Main_ControlX3_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters, ADL_CONTEXT_HANDLE* context,
                                                 ADLThreadingModel threadingModel, int adlCreateOptions)
     {
         ADL_CONTEXT *adl_context = nullptr;
 
+        HMODULE ntdll = GetModuleHandleA("ntdll.dll");
+        if(!ntdll)
+        {
+            return ADL_ERR;
+        }
+
+        PFN_wineDbgOutput wine_dbg = reinterpret_cast<PFN_wineDbgOutput>(reinterpret_cast<void*>(GetProcAddress(ntdll, "__wine_dbg_output")));
+        if(!wine_dbg)
+        {
+            return ADL_ERR;
+        }
+
         if(!callback || !context)
             return ADL_ERR_INVALID_PARAM;
 
-        if(adlCreateOptions != 0)
-        {
-            printf("FIXME: ADL2_Main_Control_Create Unimplemented adlCreateOptions: %x\n", adlCreateOptions);
-        }
+        wine_dbg("HELLOOOOOOO?????????????????????????????\n");
 
         adl_context = (ADL_CONTEXT*) calloc(1, sizeof(ADL_CONTEXT));
         if(!adl_context)
@@ -50,16 +59,26 @@ extern "C"
         adl_context->threading_model = threadingModel;
         adl_context->adl_malloc = callback;
         adl_context->enum_connected_adapters = iEnumConnectedAdapters;
+        adl_context->wine_dbg = wine_dbg;
+        adl_context->log_file = std::ofstream("dxvk-adlx.log");
+
+        print(adl_context, "DXVK-ADLX: " + std::string(DXVK_ADLX_VERSION) + "\n");
+
+        if(adlCreateOptions != 0)
+        {
+            print(adl_context, std::string("FIXME: ADL2_Main_Control_Create Unimplemented adlCreateOptions: ") + std::to_string(adlCreateOptions) + "\n");
+        }
+
         if(FAILED(CreateDXGIFactory(IID_PPV_ARGS(&adl_context->dxgi_factory))))
         {
-            printf("ERROR: ADL2_Main_Control_Create CreateDXGIFactory failed\n");
+            print(adl_context, "ERROR: ADL2_Main_Control_Create CreateDXGIFactory failed\n");
             return ADL_ERR;
         }
 
         Com<IDXGIVkInteropFactory> interopFactory;
         if(FAILED(adl_context->dxgi_factory->QueryInterface(IID_PPV_ARGS(&interopFactory))))
         {
-            printf("ERROR: Failed to query: IDXGIVkInteropFactory. Make sure you are using dxvk's dxgi.dll!\n");
+            print(adl_context, "ERROR: Failed to query: IDXGIVkInteropFactory. Make sure you are using dxvk's dxgi.dll!\n");
             return ADL_ERR;
         }
 
@@ -70,18 +89,18 @@ extern "C"
         return ADL_OK;
     }
 
-    int __stdcall ADL2_Main_ControlX2_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters, ADL_CONTEXT_HANDLE* context,
+    int DLLEXPORT ADL2_Main_ControlX2_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters, ADL_CONTEXT_HANDLE* context,
                                                 ADLThreadingModel threadingModel)
     {
         return ADL2_Main_ControlX3_Create(callback, iEnumConnectedAdapters, context, threadingModel, 0);
     }
 
-    int __stdcall ADL2_Main_Control_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters, ADL_CONTEXT_HANDLE* context)
+    int DLLEXPORT ADL2_Main_Control_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters, ADL_CONTEXT_HANDLE* context)
     {
         return ADL2_Main_ControlX2_Create(callback, iEnumConnectedAdapters, context, ADL_THREADING_UNLOCKED);
     }
 
-    int __stdcall ADL2_Main_Control_Destroy(ADL_CONTEXT_HANDLE context)
+    int DLLEXPORT ADL2_Main_Control_Destroy(ADL_CONTEXT_HANDLE context)
     {
         ADL_CONTEXT *adl_context = (ADL_CONTEXT*) context;
         ADL_LOCK();
@@ -90,9 +109,23 @@ extern "C"
         return ADL_OK;
     }
 
-    int __stdcall ADL_Main_ControlX2_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters, ADLThreadingModel threadingModel)
+    int DLLEXPORT ADL_Main_ControlX2_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters, ADLThreadingModel threadingModel)
     {
         ADL_CONTEXT *adl_context = &global_adl_context;
+
+        HMODULE ntdll = GetModuleHandleA("ntdll.dll");
+        if(!ntdll)
+        {
+            //print(adl_context, "ERROR: ADL2_Main_Control_Create failed to get ntdll\n");
+            return ADL_ERR;
+        }
+
+        PFN_wineDbgOutput wine_dbg = reinterpret_cast<PFN_wineDbgOutput>(reinterpret_cast<void*>(GetProcAddress(ntdll, "__wine_dbg_output")));
+        if(!wine_dbg)
+        {
+           // print(adl_context, "ERROR: ADL2_Main_Control_Create failed to get __wine_dbg_output\n");
+            return ADL_ERR;
+        }
 
         if(!callback)
             return ADL_ERR_INVALID_PARAM;
@@ -101,16 +134,21 @@ extern "C"
         adl_context->adl_malloc = callback;
         adl_context->enum_connected_adapters = iEnumConnectedAdapters;
         adl_context->is_adl1 = true;
+        adl_context->wine_dbg = wine_dbg;
+        adl_context->log_file = std::ofstream("dxvk-adlx.log");
+
+        print(adl_context, "DXVK-ADLX: " + std::string(DXVK_ADLX_VERSION) + "\n");
+
         if(FAILED(CreateDXGIFactory(IID_PPV_ARGS(&adl_context->dxgi_factory))))
         {
-            printf("ERROR: ADL2_Main_Control_Create CreateDXGIFactory failed\n");
+            print(adl_context, "ERROR: ADL2_Main_Control_Create CreateDXGIFactory failed\n");
             return ADL_ERR;
         }
 
         Com<IDXGIVkInteropFactory> interopFactory;
         if(FAILED(adl_context->dxgi_factory->QueryInterface(IID_PPV_ARGS(&interopFactory))))
         {
-            printf("ERROR: Failed to query: IDXGIVkInteropFactory. Make sure you are using dxvk's dxgi.dll!\n");
+            print(adl_context, "ERROR: Failed to query: IDXGIVkInteropFactory. Make sure you are using dxvk's dxgi.dll!\n");
             return ADL_ERR;
         }
 
@@ -121,12 +159,12 @@ extern "C"
         return ADL_OK;
     }
 
-    int __stdcall ADL_Main_Control_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters)
+    int DLLEXPORT ADL_Main_Control_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters)
     {
         return ADL_Main_ControlX2_Create(callback, iEnumConnectedAdapters, ADL_THREADING_UNLOCKED);
     }
 
-    int __stdcall ADL_Main_Control_Destroy()
+    int DLLEXPORT ADL_Main_Control_Destroy()
     {
         //TODO: will need to free stuff later probably
         return ADL_OK;
