@@ -31,8 +31,10 @@ add_project_link_arguments(cpp.get_supported_link_arguments(link_args), language
 dxvk_cpu_family = target_machine.cpu_family()
 if dxvk_cpu_family == 'x86_64'
   target_suffix = 'x'
+  target_suffix2 = '64'
 else
   target_suffix = 'y'
+  target_suffix2 = '32'
 endif
 
 vk_headers = include_directories('./external/Vulkan-Headers/include')

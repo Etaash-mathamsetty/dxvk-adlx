@@ -1,4 +1,4 @@
-#include "adlx_common.h"
+#include "../adlx_common.h"
 
 
 extern "C"
@@ -15,7 +15,7 @@ extern "C"
                                                                                 adl_context->vk_instance, "vkEnumeratePhysicalDevices");
         if(!func)
         {
-            print(adl_context, "ERROR: ADL2_Adapter_NumberOfAdapters_Get vkEnumeratePhysicalDevices not found\n");
+            print( "ERROR: ADL2_Adapter_NumberOfAdapters_Get vkEnumeratePhysicalDevices not found\n");
             return ADL_ERR;
         }
 
@@ -46,7 +46,7 @@ extern "C"
                                                                                 adl_context->vk_instance, "vkGetPhysicalDeviceProperties");
         if(!func || !func2)
         {
-            print(adl_context, "ERROR: ADL2_Adapter_AdapterInfo_Get failed to get vulkan funcs\n");
+            print( "ERROR: ADL2_Adapter_AdapterInfo_Get failed to get vulkan funcs\n");
             return ADL_ERR;
         }
 
@@ -59,7 +59,7 @@ extern "C"
         VkPhysicalDevice *adapters = (VkPhysicalDevice*)calloc(num_adapters_vk, sizeof(VkPhysicalDevice));
         if(!adapters)
         {
-            print(adl_context, "ERROR: ADL2_Adapter_AdapterInfo_Get calloc failed\n");
+            print( "ERROR: ADL2_Adapter_AdapterInfo_Get calloc failed\n");
             return ADL_ERR;
         }
 
@@ -123,7 +123,7 @@ extern "C"
 
         if (!func || !func2)
         {
-            print(adl_context, "ERROR: ADL2_Adapter_MemoryInfo_Get failed to get vulkan funcs\n");
+            print( "ERROR: ADL2_Adapter_MemoryInfo_Get failed to get vulkan funcs\n");
             return ADL_ERR;
         }
 
@@ -133,7 +133,7 @@ extern "C"
         VkPhysicalDevice* adapters = (VkPhysicalDevice*)calloc(num_adapters_vk, sizeof(VkPhysicalDevice));
         if (!adapters)
         {
-            print(adl_context, "ERROR: ADL2_Adapter_MemoryInfo_Get calloc failed\n");
+            print( "ERROR: ADL2_Adapter_MemoryInfo_Get calloc failed\n");
             return ADL_ERR;
         }
 
@@ -164,11 +164,11 @@ extern "C"
 
         if(!info)
         {
-            print(adl_context, "ERROR: ADL2_Adapter_Graphic_Core_Info_Get invalid param\n");
+            print( "ERROR: ADL2_Adapter_Graphic_Core_Info_Get invalid param\n");
             return ADL_ERR_INVALID_PARAM;
         }
 
-        print(adl_context, "FIXME: ADL2_Adapter_Graphic_Core_Info_Get stub!\n");
+        print( "FIXME: ADL2_Adapter_Graphic_Core_Info_Get stub!\n");
 
         //dummy values for now (rx 6800xt)
         memset(info, 0, sizeof(ADLGraphicCoreInfo));

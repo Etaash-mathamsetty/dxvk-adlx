@@ -1,4 +1,4 @@
-#include "adlx_common.h"
+#include "../adlx_common.h"
 
 extern "C"
 {
@@ -9,6 +9,8 @@ extern "C"
     {
         ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
         ADL_LOCK();
+
+        print( "FIXME: ADL2_Display_DisplayMapConfig_Get stub\n");
 
         if(!num_display_maps || !display_maps || !num_display_target || !display_target)
             return ADL_ERR_INVALID_PARAM;
@@ -32,6 +34,8 @@ extern "C"
         ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
         ADL_LOCK();
 
+        print( "TRACE: ADL2_Display_Modes_Get\n");
+
         if(adapter_index == -1)
         {
             printf("FIXME: ADL2_Display_Modes_Get adapter_index %d, using 0\n", adapter_index);
@@ -54,7 +58,7 @@ extern "C"
 
         if(FAILED(res))
         {
-            print(adl_context, "ERROR: ADL2_Display_Modes_Get EnumAdapters failed\n");
+            print( "ERROR: ADL2_Display_Modes_Get EnumAdapters failed\n");
             return ADL_ERR;
         }
 
@@ -62,7 +66,7 @@ extern "C"
 
         if(FAILED(res))
         {
-            print(adl_context, "ERROR: ADL2_Display_Modes_Get EnumOutputs failed\n");
+            print( "ERROR: ADL2_Display_Modes_Get EnumOutputs failed\n");
             return ADL_ERR;
         }
 
@@ -72,7 +76,7 @@ extern "C"
 
         if(FAILED(res))
         {
-            print(adl_context, "ERROR: ADL2_Display_Modes_Get GetDisplayModeList failed\n");
+            print( "ERROR: ADL2_Display_Modes_Get GetDisplayModeList failed\n");
             return ADL_ERR;
         }
 
@@ -82,7 +86,7 @@ extern "C"
 
         if(FAILED(res))
         {
-            print(adl_context, "ERROR: ADL2_Display_Modes_Get GetDisplayModeList failed\n");
+            print( "ERROR: ADL2_Display_Modes_Get GetDisplayModeList failed\n");
             return ADL_ERR;
         }
 
@@ -92,7 +96,7 @@ extern "C"
 
         if(!*modes)
         {
-            print(adl_context, "ERROR: ADL2_Display_Modes_Get adl_malloc failed\n");
+            print( "ERROR: ADL2_Display_Modes_Get adl_malloc failed\n");
             return ADL_ERR;
         }
 
@@ -104,7 +108,7 @@ extern "C"
 
         if(!ret)
         {
-            print(adl_context, "ERROR: ADL2_Display_Modes_Get EnumDisplayDevicesA failed\n");
+            print( "ERROR: ADL2_Display_Modes_Get EnumDisplayDevicesA failed\n");
             return ADL_ERR;
         }
 
@@ -116,7 +120,7 @@ extern "C"
 
         if(!ret)
         {
-            print(adl_context, "ERROR: ADL2_Display_Modes_Get EnumDisplaySettingsA failed\n");
+            print( "ERROR: ADL2_Display_Modes_Get EnumDisplaySettingsA failed\n");
             return ADL_ERR;
         }
 
@@ -153,9 +157,16 @@ extern "C"
                                                         num_display_target, display_target, options);
     }
 
+    int DLLEXPORT ADL2_Display_SLSMapIndex_Get(ADL_CONTEXT_HANDLE context, int adapter_index, int display_target, ADLDisplayTarget *display_target_map_index, int *sls_map_index)
+    {
+        print("FIXME: ADL2_Display_SLSMapIndex_Get stub\n");
+
+        return ADL_ERR;
+    }
+
     int DLLEXPORT ADL_Display_SLSMapIndex_Get(int adapter_index, int display_target, ADLDisplayTarget *display_target_map_index, int *sls_map_index)
     {
-        return ADL_ERR;
+        return ADL2_Display_SLSMapIndex_Get((ADL_CONTEXT_HANDLE)&global_adl_context, adapter_index, display_target, display_target_map_index, sls_map_index);
     }
 
     int DLLEXPORT ADL_Display_SLSMapConfig_Get( 	int  	iAdapterIndex,
@@ -173,6 +184,10 @@ extern "C"
 		ADLSLSOffset **  	lppSLSOffset,
 		int  	iOption )
     {
+        ADL_CONTEXT* adl_context = &global_adl_context;
+
+        print( "FIXME: ADL_Display_SLSMapConfig_Get stub\n");
+
         return ADL_ERR;
     }
 }
