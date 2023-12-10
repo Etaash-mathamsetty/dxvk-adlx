@@ -166,7 +166,8 @@ extern "C"
 
     int DLLEXPORT ADL_Display_SLSMapIndex_Get(int adapter_index, int display_target, ADLDisplayTarget *display_target_map_index, int *sls_map_index)
     {
-        return ADL2_Display_SLSMapIndex_Get((ADL_CONTEXT_HANDLE)&global_adl_context, adapter_index, display_target, display_target_map_index, sls_map_index);
+        return ADL2_Display_SLSMapIndex_Get((ADL_CONTEXT_HANDLE)&global_adl_context, adapter_index, display_target,
+                                                display_target_map_index, sls_map_index);
     }
 
     int DLLEXPORT ADL2_Display_SLSMapConfig_Get(     ADL_CONTEXT_HANDLE  	context,
