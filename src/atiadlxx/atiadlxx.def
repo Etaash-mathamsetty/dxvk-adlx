@@ -28,3 +28,4 @@ ADL_Display_DisplayMapConfig_Get
 ADL_Display_SLSMapIndex_Get
 ADL2_Display_SLSMapIndex_Get
 ADL_Display_SLSMapConfig_Get
+ADL2_Display_SLSMapConfig_Get

@@ -169,6 +169,27 @@ extern "C"
         return ADL2_Display_SLSMapIndex_Get((ADL_CONTEXT_HANDLE)&global_adl_context, adapter_index, display_target, display_target_map_index, sls_map_index);
     }
 
+    int DLLEXPORT ADL2_Display_SLSMapConfig_Get(     ADL_CONTEXT_HANDLE  	context,
+        int  	iAdapterIndex,
+		int  	iSLSMapIndex,
+		ADLSLSMap *  	lpSLSMap,
+		int *  	lpNumSLSTarget,
+		ADLSLSTarget **  	lppSLSTarget,
+		int *  	lpNumNativeMode,
+		ADLSLSMode **  	lppNativeMode,
+		int *  	lpNumBezelMode,
+		ADLBezelTransientMode **  	lppBezelMode,
+		int *  	lpNumTransientMode,
+		ADLBezelTransientMode **  	lppTransientMode,
+		int *  	lpNumSLSOffset,
+		ADLSLSOffset **  	lppSLSOffset,
+		int  	iOption )
+    {
+        print("FIXME: ADL2_Display_SLSMapConfig_Get stub\n");
+
+        return ADL_ERR;
+    }
+
     int DLLEXPORT ADL_Display_SLSMapConfig_Get( 	int  	iAdapterIndex,
 		int  	iSLSMapIndex,
 		ADLSLSMap *  	lpSLSMap,
@@ -184,10 +205,11 @@ extern "C"
 		ADLSLSOffset **  	lppSLSOffset,
 		int  	iOption )
     {
-        ADL_CONTEXT* adl_context = &global_adl_context;
-
         print( "FIXME: ADL_Display_SLSMapConfig_Get stub\n");
 
-        return ADL_ERR;
+        return ADL2_Display_SLSMapConfig_Get( (ADL_CONTEXT_HANDLE)&global_adl_context, iAdapterIndex, iSLSMapIndex, lpSLSMap,
+                                                lpNumSLSTarget, lppSLSTarget, lpNumNativeMode, lppNativeMode, lpNumBezelMode,
+                                                    lppBezelMode, lpNumTransientMode, lppTransientMode, lpNumSLSOffset,
+                                                    lppSLSOffset, iOption );
     }
 }
