@@ -213,4 +213,50 @@ extern "C"
                                                     lppBezelMode, lpNumTransientMode, lppTransientMode, lpNumSLSOffset,
                                                     lppSLSOffset, iOption );
     }
+
+    int DLLEXPORT ADL2_Display_FreeSync_Cap(ADL_CONTEXT_HANDLE context, int iAdapterIndex, int iDisplayIndex, ADLFreeSyncCap* cap)
+    {
+        ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
+        print( "FIXME: ADL2_Display_FreeSync_Cap stub\n");
+
+        if(!cap)
+            return ADL_ERR_INVALID_PARAM;
+
+        if(iAdapterIndex == -1)
+        {
+            printf("FIXME: ADL2_Display_FreeSync_Cap iAdapterIndex %d, using 0\n", iAdapterIndex);
+            iAdapterIndex = 0;
+        }
+
+        if(iDisplayIndex == -1)
+        {
+            printf("FIXME: ADL2_Display_FreeSync_Cap iDisplayIndex %d, using 0\n", iDisplayIndex);
+            iDisplayIndex = 0;
+        }
+
+        DISPLAY_DEVICEA display_device;
+
+        WINBOOL ret = EnumDisplayDevicesA(nullptr, iDisplayIndex, &display_device, 0);
+
+        DEVMODEA dev_mode;
+        memset(&dev_mode, 0, sizeof(DEVMODEA));
+        dev_mode.dmSize = sizeof(DEVMODEA);
+
+        ret = EnumDisplaySettingsA(display_device.DeviceName, ENUM_CURRENT_SETTINGS, &dev_mode);
+
+        cap->iCaps = ADL_FREESYNC_CAP_SUPPORTED | ADL_FREESYNC_CAP_CURRENTMODESUPPORTED | ADL_FREESYNC_CAP_GPUSUPPORTED;
+        cap->iMaxRefreshRateInMicroHz = dev_mode.dmDisplayFrequency * 1000000;
+        cap->iMinRefreshRateInMicroHz = dev_mode.dmDisplayFrequency * 1000000;
+        cap->ucLabelIndex = ADL_FREESYNC_LABEL_VRR;
+
+        return ADL_OK;
+    }
+
+    int DLLEXPORT ADL2_Display_DisplayInfo_Get(ADL_CONTEXT_HANDLE context, int iAdapterIndex, int* numDisplays, ADLDisplayInfo* infos, bool force_detect)
+    {
+
+        print("FIXME: ADL2_Display_DisplayInfo_Get stub\n");
+
+        return ADL_ERR;
+    }
 }

@@ -15,6 +15,7 @@ ADL_Adapter_AdapterInfo_Get
 ADL2_Graphics_Versions_Get
 ADL2_Adapter_NumberOfAdapters_Get
 ADL2_Adapter_AdapterInfo_Get
+ADL2_Adapter_AdapterInfoX2_Get
 ADL2_Graphics_VersionsX3_Get
 ADL2_Graphics_VersionsX2_Get
 ADL2_Graphics_IsGfx9AndAbove
@@ -29,3 +30,6 @@ ADL_Display_SLSMapIndex_Get
 ADL2_Display_SLSMapIndex_Get
 ADL_Display_SLSMapConfig_Get
 ADL2_Display_SLSMapConfig_Get
+ADL2_Adapter_MemoryInfo_Get
+ADL2_Display_FreeSync_Cap
+ADL2_Display_DisplayInfo_Get

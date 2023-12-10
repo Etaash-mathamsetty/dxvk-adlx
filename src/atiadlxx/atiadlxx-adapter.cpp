@@ -120,6 +120,7 @@ extern "C"
         PFN_vkGetPhysicalDeviceMemoryProperties func2 = (PFN_vkGetPhysicalDeviceMemoryProperties)adl_context->vk_get_instance_proc_addr(
                                                                                 adl_context->vk_instance, "vkGetPhysicalDeviceMemoryProperties");
 
+        print("TRACE: ADL2_Adapter_MemoryInfo_Get\n");
 
         if (!func || !func2)
         {
