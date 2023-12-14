@@ -206,8 +206,6 @@ extern "C"
 		ADLSLSOffset **  	lppSLSOffset,
 		int  	iOption )
     {
-        print( "FIXME: ADL_Display_SLSMapConfig_Get stub\n");
-
         return ADL2_Display_SLSMapConfig_Get( (ADL_CONTEXT_HANDLE)&global_adl_context, iAdapterIndex, iSLSMapIndex, lpSLSMap,
                                                 lpNumSLSTarget, lppSLSTarget, lpNumNativeMode, lppNativeMode, lpNumBezelMode,
                                                     lppBezelMode, lpNumTransientMode, lppTransientMode, lpNumSLSOffset,
@@ -217,7 +215,7 @@ extern "C"
     int DLLEXPORT ADL2_Display_FreeSync_Cap(ADL_CONTEXT_HANDLE context, int iAdapterIndex, int iDisplayIndex, ADLFreeSyncCap* cap)
     {
         ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
-        print( "FIXME: ADL2_Display_FreeSync_Cap stub\n");
+        print( "FIXME: ADL2_Display_FreeSync_Cap stub, faking FreeSync support!\n");
 
         if(!cap)
             return ADL_ERR_INVALID_PARAM;
@@ -252,11 +250,59 @@ extern "C"
         return ADL_OK;
     }
 
-    int DLLEXPORT ADL2_Display_DisplayInfo_Get(ADL_CONTEXT_HANDLE context, int iAdapterIndex, int* numDisplays, ADLDisplayInfo* infos, bool force_detect)
+    int DLLEXPORT ADL2_Display_DisplayInfo_Get(ADL_CONTEXT_HANDLE context, int iAdapterIndex, int* numDisplays, ADLDisplayInfo** infos, int force_detect)
     {
+        ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
+        print("FIXME: ADL2_Display_DisplayInfo_Get ignoring adapter index, force_detect, semi-stub\n");
 
-        print("FIXME: ADL2_Display_DisplayInfo_Get stub\n");
+        int num_monitors = 0;
 
-        return ADL_ERR;
+        if(!numDisplays || !infos)
+            return ADL_ERR_INVALID_PARAM;
+
+        if(iAdapterIndex == -1)
+            iAdapterIndex = 0;
+
+        EnumDisplayMonitors(NULL, NULL, []( HMONITOR monitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData ) {
+            int* num_monitors = (int*)dwData;
+            (*num_monitors)++;
+            return TRUE;
+        }, (LPARAM)&num_monitors);
+
+        *numDisplays = num_monitors;
+
+        DEVMODEA dev_mode;
+        memset(&dev_mode, 0, sizeof(DEVMODEA));
+        dev_mode.dmSize = sizeof(DEVMODEA);
+
+        *infos = (ADLDisplayInfo*)adl_context->adl_malloc(sizeof(ADLDisplayInfo) * num_monitors);
+
+        DISPLAY_DEVICEA display_device;
+
+        for(int i = 0; i < num_monitors; i++)
+        {
+            ADLDisplayInfo& info = (*infos)[i];
+            info.displayID.iDisplayPhysicalAdapterIndex = iAdapterIndex;
+            info.displayID.iDisplayLogicalAdapterIndex = iAdapterIndex;
+            info.displayID.iDisplayLogicalIndex = i;
+            info.displayID.iDisplayPhysicalIndex = i;
+
+            WINBOOL ret = EnumDisplayDevicesA(nullptr, i, &display_device, 0);
+
+            ret = EnumDisplaySettingsA(display_device.DeviceName, ENUM_CURRENT_SETTINGS, &dev_mode);
+
+            strcpy(info.strDisplayName, display_device.DeviceString);
+            //FIXME
+            strcpy(info.strDisplayManufacturerName, "Samsung");
+            info.iDisplayConnector = ADL_DISPLAY_CONTYPE_DISPLAYPORT;
+            info.iDisplayControllerIndex = 0;
+            info.iDisplayInfoMask = ADL_DISPLAY_DISPLAYINFO_DISPLAYCONNECTED | ADL_DISPLAY_DISPLAYINFO_DISPLAYMAPPED;
+            info.iDisplayInfoValue = ADL_DISPLAY_DISPLAYINFO_DISPLAYCONNECTED | ADL_DISPLAY_DISPLAYINFO_DISPLAYMAPPED;
+            //FIXME: what value here?
+            info.iDisplayOutputType = 0;
+            info.iDisplayType = ADL_DT_LCD_PANEL;
+        }
+
+        return ADL_OK;
     }
 }
