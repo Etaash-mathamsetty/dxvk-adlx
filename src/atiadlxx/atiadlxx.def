@@ -33,3 +33,4 @@ ADL2_Display_SLSMapConfig_Get
 ADL2_Adapter_MemoryInfo_Get
 ADL2_Display_FreeSync_Cap
 ADL2_Display_DisplayInfo_Get
+ADL_Display_DisplayInfo_Get

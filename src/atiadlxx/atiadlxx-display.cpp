@@ -305,4 +305,9 @@ extern "C"
 
         return ADL_OK;
     }
+
+    int DLLEXPORT ADL_Display_DisplayInfo_Get(int iAdapterIndex, int* numDisplays, ADLDisplayInfo** infos, int force_detect)
+    {
+        return ADL2_Display_DisplayInfo_Get((ADL_CONTEXT_HANDLE)&global_adl_context, iAdapterIndex, numDisplays, infos, force_detect);
+    }
 }
