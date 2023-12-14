@@ -10,7 +10,7 @@ extern "C"
         ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
         ADL_LOCK();
 
-        print( "FIXME: ADL2_Display_DisplayMapConfig_Get stub\n");
+        print( "FIXME: ADL2_Display_DisplayMapConfig_Get semi-stub\n");
 
         if(!num_display_maps || !display_maps || !num_display_target || !display_target)
             return ADL_ERR_INVALID_PARAM;
@@ -26,7 +26,73 @@ extern "C"
             printf("FIXME: ADL2_Display_DisplayMapConfig_Get Unimplemented options: %x\n", options);
         }
 
-        return ADL_ERR;
+        int num_monitors = 0;
+
+        EnumDisplayMonitors(NULL, NULL, []( HMONITOR monitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData ) {
+            int* num_monitors = (int*)dwData;
+            (*num_monitors)++;
+            return TRUE;
+        }, (LPARAM)&num_monitors);
+
+        *num_display_maps = num_monitors;
+        *num_display_target = num_monitors;
+
+        *display_maps = (ADLDisplayMap*)adl_context->adl_malloc(sizeof(ADLDisplayMap) * num_monitors);
+        *display_target = (ADLDisplayTarget*)adl_context->adl_malloc(sizeof(ADLDisplayTarget) * num_monitors);
+
+        DISPLAY_DEVICEA display_device;
+
+        DEVMODEA dev_mode;
+        memset(&dev_mode, 0, sizeof(DEVMODEA));
+        dev_mode.dmSize = sizeof(DEVMODEA);
+
+        for(int i = 0; i < num_monitors; i++)
+        {
+            ADLDisplayMap& map = (*display_maps)[i];
+            ADLDisplayTarget& target = (*display_target)[i];
+            ADLMode mode;
+
+            map.iDisplayMapIndex = i;
+            map.iNumDisplayTarget = 1;
+            map.iFirstDisplayTargetArrayIndex = i;
+            WINBOOL ret = EnumDisplayDevicesA(nullptr, i, &display_device, 0);
+
+            ret = EnumDisplaySettingsA(display_device.DeviceName, ENUM_CURRENT_SETTINGS, &dev_mode);
+
+            mode.displayID.iDisplayLogicalAdapterIndex = adapter_index;
+            mode.displayID.iDisplayLogicalIndex = i;
+            mode.displayID.iDisplayPhysicalAdapterIndex = adapter_index;
+            mode.displayID.iDisplayPhysicalIndex = i;
+
+            mode.fRefreshRate = (float)dev_mode.dmDisplayFrequency;
+            mode.iColourDepth = dev_mode.dmBitsPerPel;
+            mode.iAdapterIndex = adapter_index;
+            mode.iXPos = dev_mode.dmPosition.x;
+            mode.iYPos = dev_mode.dmPosition.y;
+            mode.iXRes = dev_mode.dmPelsWidth;
+            mode.iYRes = dev_mode.dmPelsHeight;
+            mode.iOrientation = dev_mode.dmOrientation * 90; //DMDO_DEFAULT = 0, DMDO_90 = 1, DMDO_180 = 2, DMDO_270 = 3
+            mode.iModeFlag = ADL_DISPLAY_MODE_PROGRESSIVE_FLAG;
+            //FIXME
+            mode.iModeMask = ADL_DISPLAY_MODE_COLOURFORMAT_8888 | ADL_DISPLAY_MODE_ORIENTATION_SUPPORTED_000 | ADL_DISPLAY_MODE_REFRESHRATE_ROUNDED;
+            mode.iModeValue = ADL_DISPLAY_MODE_COLOURFORMAT_8888 | ADL_DISPLAY_MODE_ORIENTATION_SUPPORTED_000 | ADL_DISPLAY_MODE_REFRESHRATE_ROUNDED;
+            map.displayMode = mode;
+            map.iDisplayMapMask = ADL_DISPLAY_DISPLAYMAP_MANNER_SINGLE;
+            map.iDisplayMapValue = ADL_DISPLAY_DISPLAYMAP_MANNER_SINGLE;
+
+            target.displayID.iDisplayLogicalAdapterIndex = adapter_index;
+            target.displayID.iDisplayLogicalIndex = i;
+            target.displayID.iDisplayPhysicalAdapterIndex = adapter_index;
+            target.displayID.iDisplayPhysicalIndex = i;
+
+            target.iDisplayTargetMask = ADL_DISPLAY_DISPLAYTARGET_PREFERRED;
+            target.iDisplayTargetValue = i == 0 ? ADL_DISPLAY_DISPLAYTARGET_PREFERRED : 0;
+            target.iDisplayMapIndex = i;
+        }
+
+        print("TRACE: ADL2_Display_DisplayMapConfig_Get Success!");
+
+        return ADL_OK;
     }
 
     int DLLEXPORT ADL2_Display_Modes_Get(ADL_CONTEXT_HANDLE context, int adapter_index, int display_index, int *num_modes, ADLMode **modes)
@@ -137,8 +203,10 @@ extern "C"
             mode.iOrientation = dev_mode.dmOrientation * 90; //DMDO_DEFAULT = 0, DMDO_90 = 1, DMDO_180 = 2, DMDO_270 = 3
             mode.iXPos = dev_mode.dmPosition.x;
             mode.iYPos = dev_mode.dmPosition.y;
-            mode.iModeFlag = ADL_DISPLAY_DISPLAYINFO_DISPLAYCONNECTED | ADL_DISPLAY_DISPLAYINFO_DISPLAYMAPPED;
-            mode.iModeMask = mode.iModeFlag;
+            mode.iModeFlag = ADL_DISPLAY_MODE_PROGRESSIVE_FLAG;
+            //FIXME
+            mode.iModeMask = ADL_DISPLAY_MODE_COLOURFORMAT_8888 | ADL_DISPLAY_MODE_ORIENTATION_SUPPORTED_000 | ADL_DISPLAY_MODE_REFRESHRATE_ROUNDED;
+            mode.iModeValue = ADL_DISPLAY_MODE_COLOURFORMAT_8888 | ADL_DISPLAY_MODE_ORIENTATION_SUPPORTED_000 | ADL_DISPLAY_MODE_REFRESHRATE_ROUNDED;
             mode.displayID = { display_index, display_index, adapter_index, adapter_index };
         }
 
