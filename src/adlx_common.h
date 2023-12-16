@@ -19,6 +19,7 @@ struct ADL_CONTEXT
     PFN_vkGetInstanceProcAddr vk_get_instance_proc_addr;
     //ADL2 might not behave identically to ADL1
     bool is_adl1;
+    int monitor_count;
 };
 
 static void print(std::string message)
@@ -29,9 +30,10 @@ static void print(std::string message)
         std::cerr << message;
 
     if(log_file.is_open())
+    {
         log_file << message;
-
-    log_file.flush();
+        log_file.flush();
+    }
 }
 
 static std::string iid_to_string(REFIID iid)

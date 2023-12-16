@@ -37,6 +37,8 @@ extern "C"
         ADL_CONTEXT *adl_context = (ADL_CONTEXT*) context;
         ADL_LOCK();
 
+        print("TRACE: ADL2_Adapter_AdapterInfo_Get\n");
+
         if(!info_arr)
             return ADL_ERR_INVALID_PARAM;
 
@@ -74,6 +76,8 @@ extern "C"
             info_arr[i].iAdapterIndex = i;
             info_arr[i].iVendorID = convert_to_base_10((int)props.vendorID);
             info_arr[i].iExist = true;
+            info_arr[i].iPresent = true;
+            info_arr[i].iDeviceNumber = i;
             // info_arr[i].iBusNumber = convert_to_base_10((int)props.deviceID);
 
             //both lengths are statically allocated and are the same length, safe operation

@@ -5,6 +5,13 @@ extern "C"
 {
     using namespace dxvk;
 
+    static __stdcall int count_monitors(HMONITOR monitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+    {
+        int* num_monitors = (int*)dwData;
+        (*num_monitors)++;
+        return TRUE;
+    }
+
     void* DLLEXPORT ADL2_Main_Control_GetProcAddress(ADL_CONTEXT_HANDLE context, void *module, char* proc_name)
     {
         //printf("TRACE: ADL2_Main_Control_GetProcAddress: %p %s\n", module, proc_name);
@@ -61,6 +68,8 @@ extern "C"
         adl_context->enum_connected_adapters = iEnumConnectedAdapters;
         wine_dbg = wine_dbg;
         log_file = std::ofstream("dxvk-adlx.log");
+
+        EnumDisplayMonitors(NULL, NULL, count_monitors, (LPARAM)&adl_context->monitor_count);
 
         print( "DXVK-ADLX: " + std::string(DXVK_ADLX_VERSION) + "\n");
 
@@ -139,6 +148,8 @@ extern "C"
         adl_context->is_adl1 = true;
         wine_dbg = wine_dbg;
         log_file = std::ofstream("dxvk-adlx.log");
+
+        EnumDisplayMonitors(NULL, NULL, count_monitors, (LPARAM)&adl_context->monitor_count);
 
         print( "DXVK-ADLX: " + std::string(DXVK_ADLX_VERSION) + "\n");
 

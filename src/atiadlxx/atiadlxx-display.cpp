@@ -26,13 +26,7 @@ extern "C"
             printf("FIXME: ADL2_Display_DisplayMapConfig_Get Unimplemented options: %x\n", options);
         }
 
-        int num_monitors = 0;
-
-        EnumDisplayMonitors(NULL, NULL, []( HMONITOR monitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData ) {
-            int* num_monitors = (int*)dwData;
-            (*num_monitors)++;
-            return TRUE;
-        }, (LPARAM)&num_monitors);
+        int num_monitors = adl_context->monitor_count;
 
         *num_display_maps = num_monitors;
         *num_display_target = num_monitors;
@@ -221,6 +215,7 @@ extern "C"
     int DLLEXPORT ADL_Display_DisplayMapConfig_Get(int index, int *num_display_maps, ADLDisplayMap **display_maps,
                                                         int *num_display_target, ADLDisplayTarget **display_target, int options)
     {
+        print("TRACE: ADL_Display_DisplayMapConfig_Get\n");
         return ADL2_Display_DisplayMapConfig_Get((ADL_CONTEXT_HANDLE)&global_adl_context, index, num_display_maps, display_maps,
                                                         num_display_target, display_target, options);
     }
@@ -323,19 +318,13 @@ extern "C"
         ADL_CONTEXT* adl_context = (ADL_CONTEXT*) context;
         print("FIXME: ADL2_Display_DisplayInfo_Get ignoring adapter index, force_detect, semi-stub\n");
 
-        int num_monitors = 0;
+        int num_monitors = adl_context->monitor_count;
 
         if(!numDisplays || !infos)
             return ADL_ERR_INVALID_PARAM;
 
         if(iAdapterIndex == -1)
             iAdapterIndex = 0;
-
-        EnumDisplayMonitors(NULL, NULL, []( HMONITOR monitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData ) {
-            int* num_monitors = (int*)dwData;
-            (*num_monitors)++;
-            return TRUE;
-        }, (LPARAM)&num_monitors);
 
         *numDisplays = num_monitors;
 
