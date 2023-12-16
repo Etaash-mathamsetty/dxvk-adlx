@@ -20,8 +20,7 @@ extern "C"
 
     void* DLLEXPORT ADL_Main_Control_GetProcAddress(void *module, char* proc_name)
     {
-        //printf("TRACE: ADL2_Main_Control_GetProcAddress: %p %s\n", module, proc_name);
-        return (void*)GetProcAddress((HMODULE)module, proc_name);
+        return ADL2_Main_Control_GetProcAddress((ADL_CONTEXT_HANDLE)&global_adl_context, module, proc_name);
     }
 
     int DLLEXPORT ADL2_Main_Control_Refresh(ADL_CONTEXT_HANDLE context)
@@ -32,8 +31,7 @@ extern "C"
 
     int DLLEXPORT ADL_Main_Control_Refresh()
     {
-        //no-op
-        return ADL_OK;
+        return ADL2_Main_Control_Refresh((ADL_CONTEXT_HANDLE)&global_adl_context);
     }
 
     int DLLEXPORT ADL2_Main_ControlX3_Create(ADL_MAIN_MALLOC_CALLBACK callback, int iEnumConnectedAdapters, ADL_CONTEXT_HANDLE* context,
@@ -118,6 +116,7 @@ extern "C"
         ADL_LOCK();
         //not freeing dxgi factory since it is basically a global singleton
         free(adl_context);
+        log_file.close();
         return ADL_OK;
     }
 
@@ -183,7 +182,7 @@ extern "C"
 
     int DLLEXPORT ADL_Main_Control_Destroy()
     {
-        //TODO: will need to free stuff later probably
+        log_file.close();
         return ADL_OK;
     }
 }

@@ -220,11 +220,20 @@ extern "C"
                                                         num_display_target, display_target, options);
     }
 
-    int DLLEXPORT ADL2_Display_SLSMapIndex_Get(ADL_CONTEXT_HANDLE context, int adapter_index, int display_target, ADLDisplayTarget *display_target_map_index, int *sls_map_index)
+    int DLLEXPORT ADL2_Display_SLSMapIndex_Get(ADL_CONTEXT_HANDLE context, int adapter_index, int display_target, ADLDisplayTarget *display_target_map, int *sls_map_index)
     {
-        print("FIXME: ADL2_Display_SLSMapIndex_Get stub\n");
+        print("TRACE: ADL2_Display_SLSMapIndex_Get\n");
 
-        return ADL_ERR;
+        //docs say -1 not supported for this one (yay)
+        if(adapter_index < 0 || !display_target_map || display_target <= 0 || !sls_map_index)
+        {
+            return ADL_ERR_INVALID_PARAM;
+        }
+
+        //assume there is only one SLS map
+        *sls_map_index = 0;
+
+        return ADL_OK;
     }
 
     int DLLEXPORT ADL_Display_SLSMapIndex_Get(int adapter_index, int display_target, ADLDisplayTarget *display_target_map_index, int *sls_map_index)
@@ -250,6 +259,11 @@ extern "C"
 		int  	iOption )
     {
         print("FIXME: ADL2_Display_SLSMapConfig_Get stub\n");
+
+        if(iSLSMapIndex != 0)
+        {
+            return ADL_ERR_INVALID_PARAM;
+        }
 
         return ADL_ERR;
     }
@@ -308,7 +322,7 @@ extern "C"
         cap->iCaps = ADL_FREESYNC_CAP_SUPPORTED | ADL_FREESYNC_CAP_CURRENTMODESUPPORTED | ADL_FREESYNC_CAP_GPUSUPPORTED;
         cap->iMaxRefreshRateInMicroHz = dev_mode.dmDisplayFrequency * 1000000;
         cap->iMinRefreshRateInMicroHz = dev_mode.dmDisplayFrequency * 1000000;
-        cap->ucLabelIndex = ADL_FREESYNC_LABEL_VRR;
+        cap->ucLabelIndex = ADL_FREESYNC_LABEL_FREESYNC_PREMIUM_PRO;
 
         return ADL_OK;
     }
